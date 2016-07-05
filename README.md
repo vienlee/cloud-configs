@@ -1,40 +1,13 @@
-__cloud-config files for the coreos machines inside the company.__
+## 根据模板生成cloud-config文件(golang)
+### 当前进展
+1. 已经可以根据模板文件批量生成cloud-config文件
+2. 给定mac地址，生成指定的cloud-config文件
+3. http服务可以运行，但是还没有与生成cloud-config的程序集成
 
-## 批量生成配置
+### TODO：
+1. 优化生成cloud-config的程序：支持从github上直接获取模板文件、cluster配置信息
+2. http服务集成cloud-config程序
 
-### 安装依赖环境
-
-```shell
-# 安装 python 扩展模块
-pip install -r requirements.txt
-```
-
-### 修改配置文件
-
-```shell
-# 添加一台机器配置
-vim build_config.yml
----
-10.10.10.191:
-  MAC: "00:e0:81:ee:82:c4"
-  etcd2: False
-  hostname: "coreos-191"
-  nic_name: "enp11s0f0"
-```
-
-### 修改模板
-
-其中有些模板语言, 如: `"{{ hostname }}"`、`{% if etcd2 %}` 等, 这些不能修改, 其他的固化的配置可以修改, 然后统一生效.
-
-```shell
-vim cloud-config.template
----
-```
-
-### 执行脚本
-
-```shell
-./batch_build_cloud_configs.py
-```
-
-![2016-07-02_13-26-16](http://gitlab.yzs.io/k8sp/cloud-configs/raw/master/img/2016-07-02_13-26-16.png)
+### 今天遇到的问题：
+1. yml parser的时候，大小写问题
+2. golang的包的概念，目录组织结构等问题。（在go install的时候，浪费了一点时间）
