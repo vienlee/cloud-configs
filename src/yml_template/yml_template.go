@@ -4,8 +4,8 @@ import (
 //    "fmt"
 //    "html"
 //    "log"
-//    "net/http"
-//    "bytes"
+    "net/http"
+    "errors"
     "os"
     "text/template"
     "io/ioutil"
@@ -13,6 +13,9 @@ import (
     "path/filepath"
 //    "github.com/gorilla/mux"
 )
+
+// tpl_url := "https://raw.githubusercontent.com/k8sp/cloud-configs/liangjiameng/src/yml_template/cloud-config.tpl"
+// config_url := "https://raw.githubusercontent.com/k8sp/cloud-configs/liangjiameng/src/yml_template/cluster.conf"
 
 type Config struct {
     Nodes map[string]Options
@@ -49,7 +52,7 @@ func BatchCreate(tmpl string, data []byte) {
         Check(err)
         err = t.Execute(f, v)
         Check(err)
-//      fmt.Printf("keys:%s\tvalues:%s\n", k, v.Own_ip)
+//      fmtt.Printf("keys:%s\tvalues:%s\n", k, v.Own_ip)
     }
 
 }
@@ -73,6 +76,15 @@ func CreateCloudConfig(tmpl string, data []byte, mac string) {
     }
 }
 
+func CreateFromUrl(tmpl_url string, config_url string, mac string) {
+    tmpl, err := http_get(tmpl_url)
+    Check(err)
+    data, err := http_get(config_url)
+    Check(err)
+//  BatchCreate(string(tmpl), data)
+    CreateCloudConfig(string(tmpl), data, mac)
+}
+
 
 func Check(e error) {
     if e != nil {
@@ -80,3 +92,16 @@ func Check(e error) {
     }
 }
 
+func http_get(url string) ([]byte, error) {
+    var body []byte
+    resp, err := http.Get(url)
+    if err != nil {
+        return body, errors.New("HTTP ERROR!")
+    }
+    defer resp.Body.Close()
+    body, err = ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return body, errors.New("ERROR: Cannot read data from http response.")
+    }
+    return body, nil
+}
