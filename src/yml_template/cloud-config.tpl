@@ -81,4 +81,4 @@ write_files:
     permissions: "0600"
     owner: "core"
     content: |
-      {{.Privkey}}
+      {{/*tab*/}}"{{.Privkey}}"
